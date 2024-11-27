@@ -4,4 +4,4 @@ declare type JWTTokenPayload = {
 	sub: number
 }
 
-declare type SocketPayload = { content: string; chatId: number; userId: number }
+

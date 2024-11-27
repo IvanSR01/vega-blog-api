@@ -6,8 +6,22 @@ import { Repository } from 'typeorm'
 import { Comment } from './comment.entity'
 import { CreateCommentDto, UpdateCommentDto } from './dto/comment.dto'
 
+/**
+ * Comment service
+ *
+ * @description
+ * Service for managing comments
+ */
 @Injectable()
 export class CommentService {
+
+	/**
+	 * Constructor
+	 *
+	 * @param {Repository<Comment>} commentRepository - Comment repository
+	 * @param {PostService} postService - Post service
+	 * @param {UserService} userService - User service
+	 */
 	constructor(
 		@InjectRepository(Comment)
 		private readonly commentRepository: Repository<Comment>,
@@ -15,6 +29,12 @@ export class CommentService {
 		private readonly userService: UserService
 	) {}
 
+	/**
+	 * Find comments by post id
+	 *
+	 * @param {number} postId - Post id
+	 * @returns {Promise<Comment[]>} - Comments
+	 */
 	async findCommentsByPostId(postId: number): Promise<Comment[]> {
 		return await this.commentRepository.find({
 			where: {
@@ -23,10 +43,22 @@ export class CommentService {
 		})
 	}
 
+	/**
+	 * Find comment by id
+	 *
+	 * @param {number} id - Comment id
+	 * @returns {Promise<Comment>} - Comment
+	 */
 	async findCommentById(id: number): Promise<Comment> {
 		return await this.commentRepository.findOne({ where: { id } })
 	}
 
+	/**
+	 * Find comments by user id
+	 *
+	 * @param {number} userId - User id
+	 * @returns {Promise<Comment[]>} - Comments
+	 */
 	async findCommentsByUserId(userId: number): Promise<Comment[]> {
 		return await this.commentRepository.find({
 			where: {
@@ -35,6 +67,12 @@ export class CommentService {
 		})
 	}
 
+	/**
+	 * Create comment
+	 *
+	 * @param {CreateCommentDto} dto - Create comment dto
+	 * @returns {Promise<Comment>} - Created comment
+	 */
 	async createComment(dto: CreateCommentDto): Promise<Comment> {
 		const post = await this.postService.findPostById(dto.postId)
 
@@ -51,6 +89,12 @@ export class CommentService {
 		})
 	}
 
+	/**
+	 * Update comment
+	 *
+	 * @param {UpdateCommentDto} dto - Update comment dto
+	 * @returns {Promise<void>} - Result of update operation
+	 */
 	async updateComment(dto: UpdateCommentDto): Promise<void> {
 		const comment = await this.findCommentById(dto.id)
 
@@ -59,6 +103,12 @@ export class CommentService {
 		await this.commentRepository.save({ ...comment, ...dto })
 	}
 
+	/**
+	 * Delete comment
+	 *
+	 * @param {number} id - Comment id
+	 * @returns {Promise<void>} - Result of delete operation
+	 */
 	async deleteComment(id: number): Promise<void> {
 		await this.commentRepository.delete({ id })
 	}

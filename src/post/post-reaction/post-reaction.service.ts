@@ -41,19 +41,15 @@ export class PostReactionService {
 
 		if (!user) throw new NotFoundException('User not found')
 
-		if (post.likes && post.likes.includes(user)) {
+		if (post.likes && post.likes.some(user => user.id === userId)) {
 			post.likes = post.likes.filter(user => user.id !== userId)
-			user.likes = user.likes.filter(post => post.id !== postId)
 		} else {
-			if (post.dislikes && post.dislikes.includes(user)) {
+			if (post.dislikes && post.dislikes.some(user => user.id === userId)) {
 				post.dislikes = post.dislikes.filter(user => user.id !== userId)
-				user.dislikes = user.dislikes.filter(post => post.id !== postId)
 			}
 			post.likes.push(user)
-			user.likes.push(post)
 		}
 		await this.postRepository.save(post)
-		await this.userService.updateUser(user.id, user)
 	}
 
 	/**
@@ -72,19 +68,15 @@ export class PostReactionService {
 
 		if (!user) throw new NotFoundException('User not found')
 
-		if (post.dislikes && post.dislikes.includes(user)) {
+		if (post.dislikes && post.dislikes.some(user => user.id === userId)) {
 			post.dislikes = post.dislikes.filter(user => user.id !== userId)
-			user.dislikes = user.dislikes.filter(post => post.id !== postId)
 		} else {
-			if (post.likes && post.likes.includes(user)) {
+			if (post.likes && post.likes.some(user => user.id === userId)) {
 				post.likes = post.likes.filter(user => user.id !== userId)
-				user.likes = user.likes.filter(post => post.id !== postId)
 			}
 			post.dislikes.push(user)
-			user.dislikes.push(post)
 		}
 		await this.postRepository.save(post)
-		await this.userService.updateUser(user.id, user)
 	}
 
 	/**
@@ -103,12 +95,47 @@ export class PostReactionService {
 
 		if (!user) throw new NotFoundException('User not found')
 
-		if (user.favorites && user.favorites.includes(post)) {
-			user.favorites = user.favorites.filter(post => post.id !== postId)
+		if (post.favorites === undefined) [(post.favorites = [])]
+		if (post.favorites && post.favorites.some(user => user.id === userId)) {
+			post.favorites = post.favorites.filter(user => user.id !== userId)
 		} else {
-			user.favorites.push(post)
+			post.favorites?.push(user)
 		}
 		await this.postRepository.save(post)
-		await this.userService.updateUser(user.id, user)
+	}
+
+	/**
+	 * Find posts liked by user
+	 *
+	 * @param {number} userId - User id
+	 * @returns {Promise<Post[]>} - Posts
+	 */
+	async findUserLikePosts(userId: number): Promise<Post[]> {
+		return await this.postRepository.find({
+			where: { likes: { id: userId } },
+			relations: {
+				author: true,
+				tag: true,
+				likes: true,
+				dislikes: true
+			}
+		})
+	}
+	/**
+	 * Find posts favorited by user
+	 *
+	 * @param {number} userId - User id
+	 * @returns {Promise<Post[]>} - Posts
+	 */
+	async findFavoritePosts(userId: number): Promise<Post[]> {
+		return await this.postRepository.find({
+			where: { favorites: { id: userId } },
+			relations: {
+				author: true,
+				tag: true,
+				likes: true,
+				dislikes: true
+			}
+		})
 	}
 }

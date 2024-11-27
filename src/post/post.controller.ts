@@ -85,6 +85,16 @@ export class PostController {
 	async getById(@Param('id') id: number) {
 		return await this.postService.findPostById(id)
 	}
+	/**
+	 * Get posts by author ID.
+	 * @param {number} id - Author ID.
+	 * @returns {Promise<Post[]>} - List of posts by the specified author.
+	 */
+	@Get('/by-author/:id')
+	async getByAuthor(@Param('id') id: number) {
+		return await this.postService.findByAuthor(id)
+	}
+
 
 	/**
 	 * Create a new post.

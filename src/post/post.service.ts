@@ -48,11 +48,6 @@ export class PostService {
 		if (tagName) {
 			where.tag = { name: tagName }
 		}
-
-		if (search) {
-			where.title = search
-		}
-
 		const order: any = {}
 
 		if (sortBy) {
@@ -63,17 +58,21 @@ export class PostService {
 			order.createdAt = 'DESC'
 		}
 
-		return await this.postRepository.find({
-			where,
-			take: limit ? +limit : undefined,
-			order,
-			relations: {
-				author: true,
-				tag: true,
-				likes: true,
-				dislikes: true
-			}
-		})
+		return (
+			await this.postRepository.find({
+				where,
+				take: limit ? +limit : undefined,
+				order,
+				relations: {
+					author: true,
+					tag: true,
+					likes: true,
+					dislikes: true
+				}
+			})
+		)?.filter(post =>
+			search ? post.title.toLowerCase().includes(search?.toLowerCase()) : true
+		)
 	}
 	/**
 	 * Find post by id
@@ -92,6 +91,9 @@ export class PostService {
 			}
 		})
 
+		if(!post) throw new NotFoundException('Post not found')
+
+
 		await this.postRepository.update({ id }, { viewCount: post.viewCount + 1 })
 
 		return post
@@ -107,6 +109,32 @@ export class PostService {
 		return await this.postRepository.find({
 			take: limit,
 			order: { viewCount: 'DESC' },
+			relations: {
+				author: true,
+				tag: true,
+				likes: true,
+				dislikes: true
+			}
+		})
+	}
+
+	/**
+	 * Find posts by author id
+	 *
+	 * @param {number} id - Author id
+	 * @returns {Promise<Post[]>} - Posts
+	 */
+	async findByAuthor(id: number): Promise<Post[]> {
+		const user = await this.userService.findOneById(+id)
+		console.log(user)
+		if (!user) {
+			throw new NotFoundException('User not found')
+		}
+
+		return await this.postRepository.find({
+			where: { author: {
+				id: user.id
+			} },
 			relations: {
 				author: true,
 				tag: true,

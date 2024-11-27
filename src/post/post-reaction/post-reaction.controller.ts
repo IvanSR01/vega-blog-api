@@ -1,4 +1,4 @@
-import { Controller, Param, Post } from '@nestjs/common'
+import { Controller, Get, Param, Post } from '@nestjs/common'
 import { PostReactionService } from './post-reaction.service'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { UserData } from 'src/user/decorators/user.decorator'
@@ -15,6 +15,34 @@ export class PostReactionController {
 		private readonly postReactionService: PostReactionService
 	) {}
 
+	/**
+	 * Toggle like post
+	 *
+	 * @param postId - Post id
+	 * @param id - User id
+	 *
+	 * @returns {Promise<void>} - Promise
+	 */
+
+	@Auth()
+	@Get('/like-posts')
+	async findLikedPosts(@UserData('id') id: number) {
+		return await this.postReactionService.findUserLikePosts(id)
+	}
+
+	/**
+	 * Find favorite posts by user id
+	 *
+	 * @param id - User id
+	 *
+	 * @returns {Promise<Post[]>} - Posts
+	 */
+	@Auth()
+	@Get('/favorite-posts')
+	async findFavoritePosts(@UserData('id') id: number) {
+		return await this.postReactionService.findFavoritePosts(id)
+	}
+	
 	/**
 	 * Toggle like post
 	 *

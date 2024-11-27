@@ -5,11 +5,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { User } from './user/user.entity'
 import { Tag } from './tag/tag.entity'
-import { CommentModule } from './comment/comment.module';
+import { CommentModule } from './comment/comment.module'
 import { Post } from './post/post.entity'
 import { Comment } from './comment/comment.entity'
 import { UploadModule } from './upload/upload.module'
 import { UserModule } from './user/user.module'
+import { AuthModule } from './auth/auth.module'
 
 /**
  * AppModule
@@ -50,6 +51,13 @@ import { UserModule } from './user/user.module'
 			})
 		}),
 		/**
+		 * AuthModule
+		 *
+		 * @description
+		 * Module for auth.
+		 */
+		AuthModule,
+		/**
 		 * TagModule
 		 *
 		 * @description
@@ -76,12 +84,12 @@ import { UserModule } from './user/user.module'
 		 * @description
 		 * Module for handling file uploads.
 		 */
-		UploadModule, 
+		UploadModule,
 		/**
 		 * UserModule
 		 *
 		 * @description
-	 * Module for managing users.
+		 * Module for managing users.
 		 */
 		UserModule
 	]

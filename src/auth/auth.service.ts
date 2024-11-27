@@ -6,24 +6,39 @@ import {
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import {
-	TypeLoginUser,
-	TypeValidateGitHubUser,
-	TypeValidateGoogleUser
+	TypeLoginUser
 } from 'src/types/auth.types'
 import { TypeUserData } from 'src/types/user.types'
 import { CreateUserDto } from 'src/user/dto/create-user.dto'
-import { User } from 'src/user/user.entity'
 import { UserService } from 'src/user/user.service'
-import { CloseSessionDto, CreateGoogleDto, LoginUserDto } from './dto/auth.dto'
+import { LoginUserDto } from './dto/auth.dto'
 
+/**
+ * Service for authentication
+ *
+ * @description
+ * This service handles all the operations related to authentication
+ */
 @Injectable()
 export class AuthService {
+	/**
+	 * Constructor
+	 *
+	 * @param userService - User service
+	 * @param jwtService - JWT service
+	 */
 	constructor(
 		private readonly userService: UserService,
 		private readonly jwtService: JwtService,
-	) {}
+	) { }
 
-
+	/**
+	 * Login user
+	 *
+	 * @param dto - Login user DTO
+	 *
+	 * @returns Tokens and user data
+	 */
 	async login(dto: LoginUserDto) {
 		const user = await this.userService.findOneByEmail(dto.email)
 		if (!user) {
@@ -39,6 +54,13 @@ export class AuthService {
 		}
 	}
 
+	/**
+	 * Register user
+	 *
+	 * @param dto - Create user DTO
+	 *
+	 * @returns Tokens and user data
+	 */
 	async registration(dto: CreateUserDto) {
 		const oldUser = (await this.userService.findOneByEmail(dto.email))
 		if (oldUser)
@@ -53,7 +75,13 @@ export class AuthService {
 		}
 	}
 
-
+	/**
+	 * Update tokens
+	 *
+	 * @param refreshToken - Refresh token
+	 *
+	 * @returns Tokens and user data
+	 */
 	async updateTokens(refreshToken: string) {
 		const payload = this.jwtService.decode(refreshToken)
 		console.log(payload, refreshToken)
@@ -67,6 +95,13 @@ export class AuthService {
 	}
 
 
+	/**
+	 * Validate payload
+	 *
+	 * @param user - User data
+	 *
+	 * @returns Tokens
+	 */
 	async validatePayload(user: TypeUserData): TypeLoginUser {
 		const payload = {
 			email: user.email,
@@ -75,6 +110,13 @@ export class AuthService {
 		return this.generateToken(payload)
 	}
 
+	/**
+	 * Generate token
+	 *
+	 * @param payload - Payload for token
+	 *
+	 * @returns Tokens
+	 */
 	private async generateToken(payload: JWTTokenPayload) {
 		// Убедимся, что свойство exp отсутствует
 		const { exp, ...restPayload } = payload
@@ -83,5 +125,5 @@ export class AuthService {
 			refreshToken: this.jwtService.sign(restPayload, { expiresIn: '30d' })
 		}
 	}
-
 }
+

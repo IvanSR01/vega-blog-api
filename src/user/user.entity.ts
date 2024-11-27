@@ -5,6 +5,8 @@ import { Post } from 'src/post/post.entity'
 import {
 	Column,
 	Entity,
+	JoinColumn,
+	JoinTable,
 	ManyToMany,
 	ManyToOne,
 	OneToMany,
@@ -107,41 +109,48 @@ export class User {
 	 * Posts authored by the user.
 	 */
 	@OneToMany(() => Post, post => post.author)
+	@JoinTable()
 	posts: Post[]
 
 	/**
 	 * Users who subscribed to this user.
 	 */
-	@ManyToOne(() => User, user => user.subscriptions)
+	@ManyToMany(() => User, user => user.subscriptions)
+	@JoinTable()
 	subscribers: User[]
 
 	/**
 	 * Users whom this user is subscribed to.
 	 */
-	@OneToMany(() => User, user => user.subscribers)
+	@ManyToMany(() => User, user => user.subscribers)
+	@JoinTable()
 	subscriptions: User[]
 
 	/**
 	 * Posts liked by the user.
 	 */
 	@ManyToMany(() => Post, post => post.likes)
+	@JoinTable()
 	likes: Post[]
 
 	/**
 	 * Posts disliked by the user.
 	 */
 	@ManyToMany(() => Post, post => post.dislikes)
+	@JoinTable()
 	dislikes: Post[]
 
 	/**
 	 * Favorite posts of the user.
 	 */
-	@ManyToMany(() => Post)
+	@ManyToMany(() => Post, post => post.favorites)
+	@JoinTable()
 	favorites: Post[]
 
 	/**
 	 * Comments made by the user.
 	 */
 	@OneToMany(() => Comment, comment => comment.author)
+	@JoinTable()
 	comments: Comment[]
 }
