@@ -14,7 +14,6 @@ import { CreateCommentDto, UpdateCommentDto } from './dto/comment.dto'
  */
 @Injectable()
 export class CommentService {
-
 	/**
 	 * Constructor
 	 *
@@ -39,6 +38,10 @@ export class CommentService {
 		return await this.commentRepository.find({
 			where: {
 				post: { id: postId }
+			},
+			relations: {
+				author: true,
+				post: true
 			}
 		})
 	}
@@ -63,6 +66,10 @@ export class CommentService {
 		return await this.commentRepository.find({
 			where: {
 				author: { id: userId }
+			},
+			relations: {
+				author: true,
+				post: true
 			}
 		})
 	}
