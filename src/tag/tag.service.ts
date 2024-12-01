@@ -24,7 +24,7 @@ export class TagService {
    */
   async findTags(limit?: number): Promise<Tag[]> {
     return (await this.tagRepository.find({ take: limit })).sort(
-      (a, b) => b.viewCount - a.viewCount
+      (a, b) => b.postCount - a.postCount
     )
   }
 
@@ -55,12 +55,12 @@ export class TagService {
    * @returns {Promise<Tag>} - The updated tag with incremented view count.
    * @throws {NotFoundException} - If the tag is not found.
    */
-  async setViewCount(name: string): Promise<Tag> {
+  async setPostCount(name: string): Promise<Tag> {
     const tag = await this.findTagByName(name)
 
     if (!tag) throw new NotFoundException('Tag not found')
 
-    tag.viewCount += 1
+    tag.postCount += 1
     return await this.tagRepository.save(tag)
   }
 

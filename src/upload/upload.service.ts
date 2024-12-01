@@ -25,7 +25,6 @@ export class UploadService {
 	 */
 	handleFile(file: Express.Multer.File) {
 		const directoryPath = path.dirname(file.path)
-		console.log(file)
 		if (!fs.existsSync(directoryPath)) {
 			fs.mkdirSync(directoryPath, { recursive: true })
 		}

@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { User } from './user.entity'
 import { CreateUserDto } from './dto/create-user.dto'
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UserService {
@@ -48,12 +49,13 @@ export class UserService {
 	 * @param {string} [search] - Search term for first name or last name
 	 * @returns {Promise<User[]>} - List of users
 	 */
-	async findAll(search?: string) {
+	async findAll(search?: string, limit?: number) {
 		return await this.userRepository.find({
 			where: {
 				firstName: search ? search : undefined,
 				lastName: search ? search : undefined
-			}
+			},
+			take: limit
 		})
 	}
 
@@ -84,6 +86,13 @@ export class UserService {
 	 * @returns {Promise<any>} - Result of update operation
 	 */
 	async updateUser(id: number, dto: Partial<User>) {
+		const user = await this.findOneById(id)
+
+		if (!user) throw new NotFoundException('User not found')
+
+		if (user.password !== dto.password)
+			dto.password = await bcrypt.hash(dto.password, await bcrypt.genSalt(10))
+
 		return await this.userRepository.update({ id }, dto)
 	}
 
@@ -111,7 +120,10 @@ export class UserService {
 
 		if (!author) throw new NotFoundException('Author not found')
 
-		if (user.subscriptions && user.subscriptions.includes(author)) {
+		if (
+			user.subscriptions &&
+			user.subscriptions.some(user => user.id === author.id)
+		) {
 			user.subscriptions = user.subscriptions.filter(
 				user => user.id !== author.id
 			)
@@ -122,5 +134,8 @@ export class UserService {
 			user.subscriptions.push(author)
 			author.subscriptions.push(user)
 		}
+
+		await this.userRepository.save(user)
+		await this.userRepository.save(author)
 	}
 }

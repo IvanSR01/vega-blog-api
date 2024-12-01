@@ -126,7 +126,6 @@ export class PostService {
 	 */
 	async findByAuthor(id: number): Promise<Post[]> {
 		const user = await this.userService.findOneById(+id)
-		console.log(user)
 		if (!user) {
 			throw new NotFoundException('User not found')
 		}
@@ -162,6 +161,8 @@ export class PostService {
 		if (!tagEntity) {
 			throw new NotFoundException('Tag not found')
 		}
+
+		await this.tagService.setPostCount(tagEntity.name)
 
 		return await this.postRepository.save({
 			...post,

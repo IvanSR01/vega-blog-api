@@ -42,7 +42,6 @@ export class AuthController {
 	@HttpCode(HttpStatus.CREATED)
 	@UsePipes(new ValidationPipe())
 	async register(@Body() createUserDto: CreateUserDto) {
-		console.log(createUserDto)
 		return await this.authService.registration(createUserDto)
 	}
 

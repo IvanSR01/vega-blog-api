@@ -95,7 +95,6 @@ export class PostReactionService {
 
 		if (!user) throw new NotFoundException('User not found')
 
-		if (post.favorites === undefined) [(post.favorites = [])]
 		if (post.favorites && post.favorites.some(user => user.id === userId)) {
 			post.favorites = post.favorites.filter(user => user.id !== userId)
 		} else {

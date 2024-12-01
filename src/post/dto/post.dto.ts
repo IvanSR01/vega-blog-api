@@ -35,14 +35,6 @@ export class CreatePostDto {
   @IsString()
   tag?: string;
 
-  @IsOptional()
-  @IsNumber()
-  likes?: number;
-
-  @IsOptional()
-  @IsNumber()
-  dislikes?: number;
-
   authorId: number;
 }
 

@@ -5,6 +5,7 @@ import {
 	Get,
 	Param,
 	Patch,
+	Post,
 	Put,
 	Query
 } from '@nestjs/common'
@@ -35,8 +36,8 @@ export class UserController {
 	 * @returns {Promise<User[]>} - List of users
 	 */
 	@Get()
-	async findAll(@Query('search') search?: string) {
-		return await this.userService.findAll(search)
+	async findAll(@Query('search') search?: string, @Query('limit') limit?: number) {
+		return await this.userService.findAll(search, limit)
 	}
 
 	/**
@@ -60,6 +61,12 @@ export class UserController {
 	@Auth()
 	async profile(@UserData('id') id: number) {
 		return await this.userService.findOneById(id)
+	}
+
+	@Post('toggle-subscribe/:id')
+	@Auth()
+	async toggleSubscription(@UserData('id') id: number, @Param('id') authorId: number) {
+		return await this.userService.toggleSubscription(id, authorId)
 	}
 
 	/**

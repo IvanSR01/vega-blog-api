@@ -31,7 +31,7 @@ export class Tag {
 	@Column({
 		default: 0
 	})
-	viewCount: number
+	postCount: number
 
 	/**
 	 * Posts that the tag is related to
