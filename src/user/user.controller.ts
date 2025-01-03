@@ -13,6 +13,7 @@ import { Auth } from 'src/auth/decorators/auth.decorator'
 import { TypeUserData } from 'src/types/user.types'
 import { UserData } from './decorators/user.decorator'
 import { UserService } from './user.service'
+import { AdminLevel } from 'src/auth/decorators/admin.decorator'
 
 /**
  * Controller for managing users
@@ -36,7 +37,10 @@ export class UserController {
 	 * @returns {Promise<User[]>} - List of users
 	 */
 	@Get()
-	async findAll(@Query('search') search?: string, @Query('limit') limit?: number) {
+	async findAll(
+		@Query('search') search?: string,
+		@Query('limit') limit?: number
+	) {
 		return await this.userService.findAll(search, limit)
 	}
 
@@ -65,7 +69,10 @@ export class UserController {
 
 	@Post('toggle-subscribe/:id')
 	@Auth()
-	async toggleSubscription(@UserData('id') id: number, @Param('id') authorId: number) {
+	async toggleSubscription(
+		@UserData('id') id: number,
+		@Param('id') authorId: number
+	) {
 		return await this.userService.toggleSubscription(id, authorId)
 	}
 
@@ -92,5 +99,19 @@ export class UserController {
 	@Auth()
 	async deleteProfile(@UserData('id') id: number) {
 		return await this.userService.deleteUser(id)
+	}
+
+	@Patch('toggle-banned')
+	@Auth()
+	@AdminLevel('admin-level-one')
+	async toggleBanned(@UserData('id') id: number) {
+		return await this.userService.toggleBanned(id)
+	}
+
+	@Patch('toggle-admin-level-one')
+	@Auth()
+	@AdminLevel('admin-level-two')
+	async userToAdmin(@UserData('id') id: number) {
+		return await this.userService.userToAdmin(id)
 	}
 }

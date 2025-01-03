@@ -67,7 +67,8 @@ export class PostService {
 					author: true,
 					tag: true,
 					likes: true,
-					dislikes: true
+					dislikes: true,
+					favorites: true
 				}
 			})
 		)?.filter(post =>
@@ -87,12 +88,12 @@ export class PostService {
 				author: true,
 				tag: true,
 				likes: true,
-				dislikes: true
+				dislikes: true,
+				favorites: true
 			}
 		})
 
-		if(!post) throw new NotFoundException('Post not found')
-
+		if (!post) throw new NotFoundException('Post not found')
 
 		await this.postRepository.update({ id }, { viewCount: post.viewCount + 1 })
 
@@ -113,7 +114,8 @@ export class PostService {
 				author: true,
 				tag: true,
 				likes: true,
-				dislikes: true
+				dislikes: true,
+				favorites: true
 			}
 		})
 	}
@@ -131,9 +133,11 @@ export class PostService {
 		}
 
 		return await this.postRepository.find({
-			where: { author: {
-				id: user.id
-			} },
+			where: {
+				author: {
+					id: user.id
+				}
+			},
 			relations: {
 				author: true,
 				tag: true,
@@ -169,7 +173,8 @@ export class PostService {
 			author: user,
 			tag: tagEntity,
 			likes: [],
-			dislikes: []
+			dislikes: [],
+			favorites: []
 		})
 	}
 
@@ -222,10 +227,12 @@ export class PostService {
 	 */
 	async deletePost(id: number, userId: number): Promise<void> {
 		const post = await this.findPostById(id)
-
+		const user = await this.userService.findOneById(userId)
 		if (!post) throw new NotFoundException('Post not found')
 
-		if (post.author.id !== userId)
+		if (!user) throw new NotFoundException('User not found')
+
+		if (post.author.id !== user.id && !user.role.includes('admin'))
 			throw new ConflictException('You are not the author of this post')
 
 		await this.postRepository.delete({ id })

@@ -11,6 +11,9 @@ import { Comment } from './comment/comment.entity'
 import { UploadModule } from './upload/upload.module'
 import { UserModule } from './user/user.module'
 import { AuthModule } from './auth/auth.module'
+import { QuoteModule } from './quote/quote.module'
+import { ScheduleModule } from '@nestjs/schedule'
+import { AppService } from './app.service'
 
 /**
  * AppModule
@@ -91,7 +94,10 @@ import { AuthModule } from './auth/auth.module'
 		 * @description
 		 * Module for managing users.
 		 */
-		UserModule
-	]
+		UserModule,
+		QuoteModule,
+		ScheduleModule.forRoot()
+	],
+	providers: [AppService]
 })
 export class AppModule {}

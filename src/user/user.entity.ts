@@ -30,7 +30,7 @@ export class User {
 	/**
 	 * Unique email for the user.
 	 */
-	@Column({ unique: true, nullable: true })
+	@Column({ unique: true, nullable: true }) // only local nullable for me TODO: FIX THIS
 	email: string
 
 	/**
@@ -95,6 +95,16 @@ export class User {
 		twitter?: string
 		instagram?: string
 		youtube?: string
+	}
+
+	@Column({
+		default: {},
+		type: 'jsonb'
+	})
+	accountInfo: {
+		status: 'active' | 'slow-active' | 'non-active' | 'banned'
+		statusUpdate: Date
+		comment?: string
 	}
 
 	/**

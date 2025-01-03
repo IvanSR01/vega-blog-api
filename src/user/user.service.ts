@@ -8,6 +8,7 @@ import { Repository } from 'typeorm'
 import { User } from './user.entity'
 import { CreateUserDto } from './dto/create-user.dto'
 import * as bcrypt from 'bcrypt'
+import { dot } from 'node:test/reporters'
 
 @Injectable()
 export class UserService {
@@ -137,5 +138,29 @@ export class UserService {
 
 		await this.userRepository.save(user)
 		await this.userRepository.save(author)
+	}
+
+	async toggleBanned(userId: number, comment?: string) {
+		const user = await this.findOneById(userId)
+
+		if (!user) throw new NotFoundException('User not found')
+
+		if (user.accountInfo.status === 'banned') user.accountInfo.status = 'active'
+		else {
+			user.accountInfo.status = 'banned'
+			user.accountInfo.comment = comment
+		}
+
+		return await this.userRepository.save(user)
+	}
+
+	async userToAdmin(userId: number) {
+		const user = await this.findOneById(userId)
+
+		if (!user) throw new NotFoundException('User not found')
+
+		user.role === 'admin-level-one'
+
+		return await this.userRepository.save(user)
 	}
 }
