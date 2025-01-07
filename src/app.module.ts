@@ -14,6 +14,7 @@ import { AuthModule } from './auth/auth.module'
 import { QuoteModule } from './quote/quote.module'
 import { ScheduleModule } from '@nestjs/schedule'
 import { AppService } from './app.service'
+import { Quote } from './quote/quote.entity'
 
 /**
  * AppModule
@@ -49,7 +50,7 @@ import { AppService } from './app.service'
 				username: configService.get<string>('DB_USER'),
 				password: configService.get<string>('DB_PASSWORD'),
 				database: configService.get<string>('DB_NAME'),
-				entities: [User, Tag, Post, Comment],
+				entities: [User, Tag, Post, Comment, Quote],
 				synchronize: true
 			})
 		}),

@@ -166,6 +166,8 @@ export class PostService {
 			throw new NotFoundException('Tag not found')
 		}
 
+		console.log(tagEntity)
+
 		await this.tagService.setPostCount(tagEntity.name)
 
 		return await this.postRepository.save({

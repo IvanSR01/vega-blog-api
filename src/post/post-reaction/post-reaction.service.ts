@@ -32,7 +32,7 @@ export class PostReactionService {
 	 * @param {number} userId - User id
 	 * @returns {Promise<void>} - Promise
 	 */
-	async toggleLikePost(postId: number, userId: number): Promise<void> {
+	async toggleLikePost(postId: number, userId: number): Promise<boolean> {
 		const post = await this.postService.findPostById(postId)
 		if (!post) {
 			throw new NotFoundException('Post not found')
@@ -40,7 +40,7 @@ export class PostReactionService {
 		const user = await this.userService.findOneById(userId)
 
 		if (!user) throw new NotFoundException('User not found')
-
+		console.log(post.likes && post.likes.some(user => user.id === userId))
 		if (post.likes && post.likes.some(user => user.id === userId)) {
 			post.likes = post.likes.filter(user => user.id !== userId)
 		} else {
@@ -49,7 +49,9 @@ export class PostReactionService {
 			}
 			post.likes.push(user)
 		}
+
 		await this.postRepository.save(post)
+		return post.likes.some(user => user.id === userId)
 	}
 
 	/**
@@ -59,7 +61,7 @@ export class PostReactionService {
 	 * @param {number} userId - User id
 	 * @returns {Promise<void>} - Promise
 	 */
-	async toggleDislikePost(postId: number, userId: number): Promise<void> {
+	async toggleDislikePost(postId: number, userId: number): Promise<boolean> {
 		const post = await this.postService.findPostById(postId)
 		if (!post) {
 			throw new NotFoundException('Post not found')
@@ -77,6 +79,7 @@ export class PostReactionService {
 			post.dislikes.push(user)
 		}
 		await this.postRepository.save(post)
+		return post.dislikes.some(user => user.id === userId)
 	}
 
 	/**
@@ -86,7 +89,7 @@ export class PostReactionService {
 	 * @param {number} userId - User id
 	 * @returns {Promise<void>} - Promise
 	 */
-	async toggleFavoritePost(postId: number, userId: number): Promise<void> {
+	async toggleFavoritePost(postId: number, userId: number): Promise<boolean> {
 		const post = await this.postService.findPostById(postId)
 		if (!post) {
 			throw new NotFoundException('Post not found')
@@ -103,6 +106,7 @@ export class PostReactionService {
 			post.favorites?.push(user)
 		}
 		await this.postRepository.save(post)
+		return post.favorites.some(user => user.id === userId)
 	}
 
 	/**
