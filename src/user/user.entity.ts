@@ -14,7 +14,7 @@ import {
 } from 'typeorm'
 
 const defaultDescription =
-	'Meet Jonathan Doe, a passionate writer and blogger with a love for <br/> technology and travel. Jonathan holds a degree in Computer Science and <br/> has spent years working in the tech industry, gaining a deep <br/>understanding of the impact technology has on our lives.'
+	'Meet Jonathan Doe, a passionate writer and blogger with a love for technology and travel. Jonathan holds a degree in Computer Science and  has spent years working in the tech industry, gaining a deep understanding of the impact technology has on our lives.'
 
 /**
  * User entity representing a user in the system.
@@ -30,7 +30,7 @@ export class User {
 	/**
 	 * Unique email for the user.
 	 */
-	@Column({ unique: true, nullable: true }) // only local nullable for me TODO: FIX THIS
+	@Column({ unique: true }) 
 	email: string
 
 	/**
